@@ -13,7 +13,6 @@
   const scoreValueEl = document.getElementById('scoreValue');
   const backBtn = document.getElementById('backBtn');
   const pauseBtn = document.getElementById('pauseBtn');
-  const soundBtn = document.getElementById('soundBtn');
   const pauseOverlay = document.getElementById('pauseOverlay');
   const countdownOverlay = document.getElementById('countdownOverlay');
   const countdownNumberEl = document.getElementById('countdownNumber');
@@ -237,18 +236,6 @@
     }
   }
 
-  function initSoundToggle() {
-    const enabled = window.ArcadeStorage.getSoundEnabled();
-    soundBtn.textContent = enabled ? '🔊' : '🔇';
-    soundBtn.setAttribute('aria-pressed', String(enabled));
-    soundBtn.addEventListener('click', () => {
-      const next = !window.ArcadeStorage.getSoundEnabled();
-      window.ArcadeStorage.setSoundEnabled(next);
-      soundBtn.textContent = next ? '🔊' : '🔇';
-      soundBtn.setAttribute('aria-pressed', String(next));
-    });
-  }
-
   function applyTranslations() {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       el.textContent = window.ArcadeI18n.t(el.dataset.i18n);
@@ -298,7 +285,6 @@
     document.fonts.load('10px "Press Start 2P"', 'Привет');
   }
 
-  initSoundToggle();
   initSettings();
   applyTranslations();
   renderMenu();
