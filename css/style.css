@@ -60,11 +60,17 @@
 }
 
 html, body {
-  height: 100%;
   margin: 0;
 }
 
+html {
+  height: 100%;
+}
+
+/* min-height (not height) so a tall menu can scroll; #app centres itself with auto margins, which fall back to top-aligned when it overflows. */
 body {
+  min-height: 100%;
+  min-height: 100dvh;
   background-color: var(--bg-app);
   background-image:
     linear-gradient(rgba(64, 22, 103, 0.22) 1px, transparent 1px),
@@ -73,13 +79,11 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   display: flex;
-  justify-content: center;
-  align-items: center;
   overscroll-behavior: none;
-  touch-action: none;
+  touch-action: manipulation; /* page can scroll, but no double-tap zoom; the game canvas turns touch handling off itself */
 }
 
-/* ---------- Main menu video background ---------- */
+/* ---------- Main menu background ---------- */
 
 .menu-bg {
   position: fixed;
@@ -104,12 +108,20 @@ body {
 }
 
 #app {
+  --chrome-h: 150px; /* vertical space the HUD and paddings take above/below the game field */
   width: 100%;
   max-width: 680px;
+  margin: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
   padding: 12px;
+  /* keep content clear of the notch and gesture bar; the line above is the fallback for browsers without env() */
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom))
+    calc(12px + env(safe-area-inset-left));
 }
 
 /* ---------- Buttons ---------- */
@@ -124,6 +136,7 @@ body {
   border: 2px solid var(--border-default);
   border-radius: 4px;
   padding: 10px 12px;
+  min-height: 44px; /* comfortable touch target */
   box-shadow: 0 4px 0 var(--shadow-hard);
   cursor: pointer;
   transition: border-color 0.12s steps(2), transform 0.06s steps(2), box-shadow 0.06s steps(2);
@@ -378,7 +391,7 @@ button:focus-visible {
 }
 
 .lang-btn {
-  padding: 8px 12px;
+  padding: 8px 14px;
 }
 
 .lang-btn.active {
@@ -402,10 +415,17 @@ button:focus-visible {
   margin: 0 auto;
 }
 
-/* Square field that shrinks to whichever is tighter: the 640px design size, the window width or the window height. */
+/* Square field that shrinks to whichever is tighter: the 640px design size, the window width or the window height.
+   The second declaration uses dvh (the visible height on phones, excluding the browser bar) and the safe-area insets;
+   browsers that do not know them ignore it and keep the first one. */
 #gameCanvas {
   display: block;
-  width: min(640px, calc(100vw - 36px), calc(100vh - 150px));
+  width: min(640px, calc(100vw - 36px), calc(100vh - var(--chrome-h)));
+  width: min(
+    640px,
+    calc(100vw - 36px - env(safe-area-inset-left) - env(safe-area-inset-right)),
+    calc(100dvh - var(--chrome-h) - env(safe-area-inset-top) - env(safe-area-inset-bottom))
+  );
   height: auto;
   aspect-ratio: 1 / 1;
   background: var(--bg-game);
@@ -490,6 +510,7 @@ button:focus-visible {
   border-radius: 4px;
   padding: 11px 16px;
   min-width: 180px;
+  min-height: 44px;
   box-shadow: 0 4px 0 var(--shadow-hard);
   cursor: pointer;
   transition: transform 0.06s steps(2), box-shadow 0.06s steps(2);
@@ -541,6 +562,35 @@ button:focus-visible {
   0% { transform: scale(1.9); opacity: 0; }
   40% { transform: scale(0.9); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Responsive ---------- */
+
+/* Very narrow phones: shrink the HUD and logo so Back / score / Resume still fit on one row. */
+@media (max-width: 360px) {
+  #hud { gap: 6px; }
+  .hud-btn { font-size: 9px; padding: 10px 8px; }
+  .score { font-size: 10px; gap: 4px; }
+  .score-value { font-size: 14px; }
+  .logo { font-size: 24px; letter-spacing: 2px; }
+  .overlay-box { padding: 18px 16px; min-width: 0; }
+}
+
+/* Phone held sideways: little height, lots of width. Two columns of cards, tighter chrome, smaller overlay. */
+@media (orientation: landscape) and (max-height: 520px) {
+  #app { --chrome-h: 92px; gap: 8px; }
+  #menuScreen { max-width: 640px; }
+  .logo { font-size: 22px; margin: 0; }
+  .tagline { margin-bottom: 12px; }
+  .game-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .game-card { padding: 10px 12px 10px 16px; gap: 12px; }
+  .game-card-icon { width: 44px; height: 44px; }
+  .game-card-icon svg { width: 34px; height: 34px; }
+  .game-card-text { gap: 6px; }
+  #settingsScreen h1 { margin: 0 0 12px; }
+  .overlay-box { padding: 14px 20px; gap: 10px; }
+  .overlay-box p { font-size: 13px; }
+  .countdown-number { font-size: 56px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
