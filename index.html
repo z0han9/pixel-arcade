@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0F1016">
 <title>Pixel Arcade</title>
-<meta name="description" content="Pixel Arcade: Snake, Bricks, Pixel Bird and 2048 in your browser. Free, no install, works on phone and desktop.">
+<meta name="description" content="Pixel Arcade: Snake, Bricks, Pixel Bird, 2048 and 5 Letters in your browser. Free, no install, works on phone and desktop.">
 <meta property="og:title" content="Pixel Arcade">
-<meta property="og:description" content="Four pixel mini-games in your browser: Snake, Bricks, Pixel Bird, 2048.">
+<meta property="og:description" content="Five pixel mini-games in your browser: Snake, Bricks, Pixel Bird, 2048, 5 Letters.">
 <meta property="og:type" content="website">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/style.css">
@@ -68,6 +68,7 @@
         <div class="overlay-box">
           <p data-i18n="gameOverTitle">Игра окончена</p>
           <p id="finalScore" class="final-score"></p>
+          <p id="overNote" class="over-note" hidden></p>
           <button id="retryBtn" data-i18n="retryBtn">Заново</button>
           <button id="menuBtn" class="btn-secondary" data-i18n="menuBtn">В меню</button>
         </div>
@@ -87,6 +88,8 @@
 <script src="js/games/breakout.js"></script>
 <script src="js/games/flappy.js"></script>
 <script src="js/games/2048.js"></script>
+<script src="js/games/words-data.js"></script>
+<script src="js/games/words.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

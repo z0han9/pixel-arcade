@@ -7,6 +7,11 @@
   //  - onAction(action) — a one-shot dispatch on key-down/tap/swipe (menus, Snake's turn queue).
   //  - isHeld(action) / getPointerX() — continuous state, polled from a game's update()
   //    loop (paddle-style games that need to move while a key/finger is held down).
+  //
+  // Word games need letters rather than arrows. In text mode (setTextMode) the keyboard is no longer
+  // mapped to actions - otherwise typing "P" would pause and "W" would mean UP. Every key goes to
+  // onKey(key, code) instead and only Escape still pauses. Presses on the canvas are also reported
+  // as onTap(x, y) in logical canvas pixels, for on-screen buttons drawn by a game.
 
   const KEY_MAP = {
     ArrowUp: 'UP', KeyW: 'UP',
@@ -26,6 +31,7 @@
   let pointerLogicalX = null;
   let logicalSize = 0;
   let trackedCanvas = null;
+  let textMode = false;
 
   function updatePointerFromClientX(clientX) {
     if (!trackedCanvas) return;
@@ -35,11 +41,24 @@
     pointerLogicalX = Math.max(0, Math.min(logicalSize, ratio * logicalSize));
   }
 
-  function init({ canvas, backBtn, pauseBtn, onAction, logicalSize: ls }) {
+  function init({ canvas, backBtn, pauseBtn, onAction, onKey, onTap, logicalSize: ls }) {
     trackedCanvas = canvas || null;
     logicalSize = ls || 0;
 
     window.addEventListener('keydown', (e) => {
+      if (textMode) {
+        if (e.code === 'Escape') {
+          if (e.repeat) return;
+          e.preventDefault();
+          onAction('PAUSE');
+          return;
+        }
+        if (e.ctrlKey || e.metaKey || e.altKey) return; // leave browser shortcuts alone
+        if (e.repeat && e.key !== 'Backspace') return;
+        if (onKey && onKey(e.key, e.code)) e.preventDefault();
+        return;
+      }
+
       const action = KEY_MAP[e.code];
       if (!action) return;
       if (action === 'UP' || action === 'DOWN' || action === 'LEFT' || action === 'RIGHT') {
@@ -98,7 +117,23 @@
       canvas.addEventListener('mousemove', (e) => {
         updatePointerFromClientX(e.clientX);
       });
+
+      // pointerdown (not click) so an on-screen key reacts the moment the finger lands
+      canvas.addEventListener('pointerdown', (e) => {
+        if (!onTap || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        const rect = canvas.getBoundingClientRect();
+        if (!canvas.clientWidth || !canvas.clientHeight) return;
+        // clientLeft/clientTop skip the canvas border, which is not part of the drawing area
+        const x = (e.clientX - rect.left - canvas.clientLeft) / canvas.clientWidth;
+        const y = (e.clientY - rect.top - canvas.clientTop) / canvas.clientHeight;
+        onTap(x * logicalSize, y * logicalSize);
+      });
     }
+  }
+
+  function setTextMode(on) {
+    textMode = !!on;
+    heldActions.clear();
   }
 
   function isHeld(action) {
@@ -109,5 +144,5 @@
     return pointerLogicalX;
   }
 
-  window.ArcadeInput = { init, isHeld, getPointerX };
+  window.ArcadeInput = { init, isHeld, getPointerX, setTextMode };
 })();

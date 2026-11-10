@@ -18,6 +18,7 @@
   const countdownNumberEl = document.getElementById('countdownNumber');
   const gameOverOverlay = document.getElementById('gameOverOverlay');
   const finalScoreEl = document.getElementById('finalScore');
+  const overNoteEl = document.getElementById('overNote');
   const resumeBtn = document.getElementById('resumeBtn');
   const pauseMenuBtn = document.getElementById('pauseMenuBtn');
   const retryBtn = document.getElementById('retryBtn');
@@ -115,6 +116,7 @@
     if (!def) return;
     currentGameDef = def;
     appEl.dataset.game = id;
+    window.ArcadeInput.setTextMode(!!def.textInput);
     resizeCanvasForDPI();
     currentGame = def.create();
     currentGame.init(ctx, LOGICAL_SIZE, LOGICAL_SIZE);
@@ -127,6 +129,8 @@
 
   function beginPlay() {
     const wantsCountdown = !currentGameDef || currentGameDef.countdown !== false;
+    // a HUD button that still has focus would react to Enter/Space typed for the game
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
     setState(wantsCountdown ? STATE.COUNTDOWN : STATE.PLAYING);
   }
 
@@ -135,6 +139,7 @@
     currentGameDef = null;
     overTimer = null;
     delete appEl.dataset.game;
+    window.ArcadeInput.setTextMode(false);
     renderMenu();
     updateScoreDisplay(0);
     setState(STATE.MENU);
@@ -164,6 +169,10 @@
       window.ArcadeI18n.t('finalScorePrefix') + currentGame.score +
       (isNewHi ? window.ArcadeI18n.t('newHighScoreSuffix') : '');
     finalScoreEl.classList.toggle('record', isNewHi);
+    // optional extra line from the game, e.g. the word that was not guessed
+    const note = currentGame.overNote || '';
+    overNoteEl.textContent = note;
+    overNoteEl.hidden = !note;
     setState(STATE.GAME_OVER);
   }
 
@@ -268,6 +277,16 @@
     });
   }
 
+  // Text-input games (see ArcadeInput.setTextMode): raw keys and canvas taps go straight to the game.
+  function onKey(key, code) {
+    if (state !== STATE.PLAYING || !currentGame || !currentGame.onKey) return false;
+    return currentGame.onKey(key, code);
+  }
+
+  function onTap(x, y) {
+    if (state === STATE.PLAYING && currentGame && currentGame.onTap) currentGame.onTap(x, y);
+  }
+
   resumeBtn.addEventListener('click', resumeGame);
   pauseMenuBtn.addEventListener('click', goToMenu);
   retryBtn.addEventListener('click', retryGame);
@@ -278,7 +297,7 @@
   });
   window.addEventListener('blur', pauseGame);
 
-  window.ArcadeInput.init({ canvas, backBtn, pauseBtn, onAction, logicalSize: LOGICAL_SIZE });
+  window.ArcadeInput.init({ canvas, backBtn, pauseBtn, onAction, onKey, onTap, logicalSize: LOGICAL_SIZE });
 
   if (document.fonts && document.fonts.load) {
     document.fonts.load('10px "Press Start 2P"');

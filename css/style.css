@@ -38,6 +38,8 @@
   --flappy-accent-2: #FF8AB3;
   --2048-accent: #C6A0E8;
   --2048-accent-2: #F6A781;
+  --words-accent: #FF8AB3;
+  --words-accent-2: #FFD58B;
 
   --pixel-green: #749855;
   --peach: #F6A781;
@@ -54,6 +56,7 @@
 [data-game="breakout"] { --game-accent: var(--bricks-accent); --game-accent-2: var(--bricks-accent-2); }
 [data-game="flappy"] { --game-accent: var(--flappy-accent); --game-accent-2: var(--flappy-accent-2); }
 [data-game="2048"] { --game-accent: var(--2048-accent); --game-accent-2: var(--2048-accent-2); }
+[data-game="words"] { --game-accent: var(--words-accent); --game-accent-2: var(--words-accent-2); }
 
 * {
   box-sizing: border-box;
@@ -492,6 +495,11 @@ button:focus-visible {
   font-size: 11px !important;
 }
 
+.over-note {
+  color: var(--text-primary);
+  font-size: 12px !important;
+}
+
 .final-score.record {
   animation: recordBlink 0.7s steps(2) infinite;
 }
@@ -583,6 +591,7 @@ button:focus-visible {
   .logo { font-size: 22px; margin: 0; }
   .tagline { margin-bottom: 12px; }
   .game-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .game-card:last-child:nth-child(odd) { grid-column: 1 / -1; } /* an odd card out gets the full row */
   .game-card { padding: 10px 12px 10px 16px; gap: 12px; }
   .game-card-icon { width: 44px; height: 44px; }
   .game-card-icon svg { width: 34px; height: 34px; }

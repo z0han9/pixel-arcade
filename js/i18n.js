@@ -21,8 +21,14 @@
       'game.breakout': 'Кирпичи',
       'game.flappy': 'Птичка',
       'game.2048': '2048',
+      'game.words': '5 букв',
       breakoutLaunchHint: 'Пробел / тап — запуск',
-      flappyLaunchHint: 'Пробел / тап — взлёт'
+      flappyLaunchHint: 'Пробел / тап — взлёт',
+      wordsHint: 'Угадай слово из 5 букв',
+      wordsTooShort: 'Мало букв',
+      wordsNotInList: 'Нет в словаре',
+      wordsAnswer: 'Слово: ',
+      wordsPraise: 'Гений!|Блестяще!|Отлично!|Хорошо!|Неплохо!|Фух!'
     },
     en: {
       back: '← Menu',
@@ -45,8 +51,14 @@
       'game.breakout': 'Bricks',
       'game.flappy': 'Pixel Bird',
       'game.2048': '2048',
+      'game.words': '5 Letters',
       breakoutLaunchHint: 'Space / tap to launch',
-      flappyLaunchHint: 'Space / tap to flap'
+      flappyLaunchHint: 'Space / tap to flap',
+      wordsHint: 'Guess the 5-letter word',
+      wordsTooShort: 'Not enough letters',
+      wordsNotInList: 'Not in word list',
+      wordsAnswer: 'Word: ',
+      wordsPraise: 'Genius!|Brilliant!|Great!|Nice!|Not bad!|Phew!'
     }
   };
 
